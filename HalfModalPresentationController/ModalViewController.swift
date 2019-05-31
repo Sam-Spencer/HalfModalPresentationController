@@ -9,8 +9,15 @@
 import UIKit
 
 class ModalViewController: UIViewController, HalfModalPresentable {
-    @IBAction func maximizeButtonTapped(sender: AnyObject) {
-        maximizeToFullScreen()
+    
+    @IBAction func maximizeButtonTapped(sender: UIBarButtonItem) {
+        if isMaximized() {
+            minimizeToHalfScreen()
+            sender.title = "Expand"
+        } else {
+            maximizeToFullScreen()
+            sender.title = "Shrink"
+        }
     }
     
     @IBAction func cancelButtonTapped(sender: AnyObject) {

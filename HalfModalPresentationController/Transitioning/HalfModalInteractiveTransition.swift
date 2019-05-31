@@ -22,14 +22,14 @@ class HalfModalInteractiveTransition: UIPercentDrivenInteractiveTransition {
         
         super.init()
         
-        self.panGestureRecognizer.addTarget(self, action: #selector(onPan))
+        self.panGestureRecognizer.addTarget(self, action: #selector(onPan(pan:)))
         view.addGestureRecognizer(panGestureRecognizer)
     }
     
     override func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
         super.startInteractiveTransition(transitionContext)
-        
         print("start interactive")
+        finish()
     }
     
     override var completionSpeed: CGFloat {
@@ -39,15 +39,13 @@ class HalfModalInteractiveTransition: UIPercentDrivenInteractiveTransition {
         set {}
     }
     
-    func onPan(pan: UIPanGestureRecognizer) -> Void {
+    @objc func onPan(pan: UIPanGestureRecognizer) -> Void {
         let translation = pan.translation(in: pan.view?.superview)
         
         switch pan.state {
         case .began:
             self.presentingViewController?.dismiss(animated: true, completion: nil)
-            
             break
-            
         case .changed:
             let screenHeight = UIScreen.main.bounds.size.height - 50
             let dragAmount = screenHeight
@@ -56,30 +54,21 @@ class HalfModalInteractiveTransition: UIPercentDrivenInteractiveTransition {
 
             percent = fmaxf(percent, 0.0)
             percent = fminf(percent, 1.0)
-            
             update(CGFloat(percent))
             
             shouldComplete = percent > threshold
-            
             break
-            
         case .ended, .cancelled:
             if pan.state == .cancelled || !shouldComplete {
                 cancel()
-                
                 print("cancel transition")
-            }
-            else {
+            } else {
                 finish()
-                
                 print("finished transition")
             }
-            
             break
-            
         default:
             cancel()
-            
             break
         }
     }
